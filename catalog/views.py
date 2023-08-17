@@ -1,6 +1,8 @@
 from django.shortcuts import render
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, ListView
 
-from catalog.models import Product
+from catalog.models import Product, Blog
 
 
 def home_page(request):
@@ -31,5 +33,18 @@ def contact_page(request):
         'title': 'Контакты',
     }
     return render(request, 'catalog/contacts.html', context)
+
+
+class BlogListView(ListView):
+    model = Blog
+    template_name = 'blog/blog_list.html'
+
+
+
+class BlogCreateView(CreateView):
+    model = Blog
+    fields = ('title', 'content',)
+    success_url = reverse_lazy('blog:base')
+
 
 
