@@ -1,50 +1,66 @@
 from django.shortcuts import render
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, ListView
+from django.views import View
+from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 
 from catalog.models import Product, Blog
 
 
-def home_page(request):
-    product_list = Product.objects.all()[:3]
-    context = {
-        'object_list': product_list,
-        'title': 'Главная'
-    }
-    return render(request, 'catalog/home.html', context)
+class ProductListView(ListView):
+    model = Product
+    template_name = 'catalog/home.html'
+    context_object_name = 'object_list'
+    paginate_by = 10
 
 
-def product_page(request, pk):
-    product_item = Product.objects.get(pk=pk)
-    context = {
-        'object_list': Product.objects.filter(id=pk),
-        'title': 'Товары'
-    }
-    return render(request, 'catalog/product.html', context)
+class ProductDetailView(DetailView):
+    model = Product
+    template_name = 'catalog/product.html'
+    context_object_name = 'object'
+    pk_url_kwarg = 'pk'
 
 
-def contact_page(request):
-    if request.method == 'POST':
-        name = request.POST.get('name')
-        phone = request.POST.get('phone')
-        message = request.POST.get('message')
-        print(f'{phone} - {name}: {message}')
-    context = {
-        'title': 'Контакты',
-    }
-    return render(request, 'catalog/contacts.html', context)
+class ContactsView(View):
+    def get(self, request):
+        return render(request, 'catalog/contacts.html')
 
 
 class BlogListView(ListView):
     model = Blog
+    extra_context = {'title': 'Blogs'}
     template_name = 'blog/blog_list.html'
-
 
 
 class BlogCreateView(CreateView):
     model = Blog
+    fields = ('title', 'content', 'preview')
+    extra_context = {'title': 'Create blog'}
+    template_name = 'blog/blog_form.html'
+    success_url = reverse_lazy('blog:blog_list')
+
+
+class BlogDetailView(DetailView):
+    model = Blog
+    extra_context = {'title': 'Blog'}
+    template_name = 'blog/blog_detail.html'
+
+
+class BlogUpdateView(UpdateView):
+    model = Blog
     fields = ('title', 'content',)
-    success_url = reverse_lazy('blog:base')
+    template_name = 'blog/blog_form.html'
+    extra_context = {'title': 'Update blog'}
+    success_url = reverse_lazy('blogs:blog_list')
+
+
+class BlogDeleteView(DeleteView):
+    model = Blog
+    extra_context = {'title': 'Delete blog'}
+    success_url = reverse_lazy('blogs:blog_list')
+    template_name = 'blog/blog_confirm_delete.html'
+
+
+
 
 
 
