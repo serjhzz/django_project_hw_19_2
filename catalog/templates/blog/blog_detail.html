@@ -14,14 +14,14 @@
                 </div>
                 <div class="col-md-8">
                     <div class="card-body">
-                        <h5 class="card-title">{{ object.title }}</h5>
+                        <h5 class="card-title">{{ object.title }} slug: {{ object.slug }}</h5>
                         <p class="card-text">{{ object.contained }}</p>
                             <p class="card-text"></p>
                                 <small
                                     class="text-body-secondary">{{ object.created_at }}
                                 </small>
                                 <small
-                                    class="text-body-secondary ps-5">{{ object.view_count }}
+                                    class="text-body-secondary ps-5">Просмотры: {{ object.view_count }}
                                 </small>
                             </p>
                     </div>
