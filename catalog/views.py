@@ -9,16 +9,54 @@ from catalog.models import Product, Blog
 
 class ProductListView(ListView):
     model = Product
-    template_name = 'catalog/home.html'
+    template_name = 'catalog/catalog_list.html'
     context_object_name = 'object_list'
     paginate_by = 10
 
 
 class ProductDetailView(DetailView):
     model = Product
-    template_name = 'catalog/product.html'
-    context_object_name = 'object'
-    pk_url_kwarg = 'pk'
+    extra_context = {'title': 'Product'}
+    template_name = 'catalog/catalog_detail.html'
+
+
+class ProductCreateView(CreateView):
+    model = Product
+    fields = ('title', 'content', 'preview')
+    extra_context = {'title': 'Create product'}
+    template_name = 'catalog/catalog_form.html'
+    success_url = reverse_lazy('catalog:catalog_list')
+
+    def form_valid(self, form):
+        if form.is_valid():
+            new_blog = form.save()
+            new_blog.slug = slugify(new_blog.title)
+            new_blog.save()
+
+        return super().form_valid(form)
+
+
+class ProductUpdateView(UpdateView):
+    model = Blog
+    fields = ('title', 'content', 'preview')
+    template_name = 'catalog/catalog_form.html'
+    extra_context = {'title': 'Update product'}
+    success_url = reverse_lazy('catalog:catalog_list')
+
+    def form_valid(self, form):
+        if form.is_valid():
+            new_blog = form.save()
+            new_blog.slug = slugify(new_blog.title)
+            new_blog.save()
+
+        return super().form_valid(form)
+
+
+class ProductDeleteView(DeleteView):
+    model = Blog
+    extra_context = {'title': 'Delete product'}
+    success_url = reverse_lazy('catalog:catalog_list')
+    template_name = 'catalog/catalog_confirm_delete.html'
 
 
 class ContactsView(View):
