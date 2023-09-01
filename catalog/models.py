@@ -5,6 +5,7 @@ NULLABLE = {
 }
 
 
+
 class Category(models.Model):
     name = models.CharField(max_length=100, verbose_name="Наименование")
     description = models.CharField(max_length=200, **NULLABLE, verbose_name="Описание")
@@ -34,6 +35,25 @@ class Product(models.Model):
     class Meta:
         verbose_name = 'Товар'
         verbose_name_plural = 'Товары'
+        ordering = ('name',)
+
+
+class Version(models.Model):
+    STATUS_CHOICES = [
+        (True, 'Актуальная'),
+        (False, 'Неактуальная')
+    ]
+    name = models.CharField(max_length=100, verbose_name="Название версии")
+    number_version = models.IntegerField(**NULLABLE, verbose_name="Номер версии")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, **NULLABLE, verbose_name="Продукт")
+    status = models.BooleanField(choices=STATUS_CHOICES, default=STATUS_CHOICES[0], verbose_name='Статус')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Версия'
+        verbose_name_plural = 'Версии'
         ordering = ('name',)
 
 
