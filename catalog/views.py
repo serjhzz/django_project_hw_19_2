@@ -13,8 +13,13 @@ class ProductListView(ListView):
     model = Product
     extra_context = {'title': 'Product'}
     template_name = 'catalog/catalog_list.html'
-    context_object_name = 'object_list'
     paginate_by = 10
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        active_versions = Version.objects.filter(is_activ=True)
+        context['active_versions'] = active_versions
+        return context
 
 
 class ProductDetailView(DetailView):
@@ -48,6 +53,7 @@ class ProductUpdateView(UpdateView):
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
         SubjectFormset = inlineformset_factory(Product, Version, form=VersionForm, extra=1)
+
         if self.request.method == 'POST':
             context_data['formset'] = SubjectFormset(self.request.POST, instance=self.object)
         else:
@@ -57,7 +63,8 @@ class ProductUpdateView(UpdateView):
     def form_valid(self, form):
         formset = self.get_context_data()['formset']
         self.object = form.save()
-        if form.is_valid():
+
+        if formset.is_valid():
             formset.instance = self.object
             formset.save()
 

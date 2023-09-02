@@ -39,14 +39,10 @@ class Product(models.Model):
 
 
 class Version(models.Model):
-    STATUS_CHOICES = [
-        (True, 'Актуальная'),
-        (False, 'Неактуальная')
-    ]
     name = models.CharField(max_length=100, verbose_name="Название версии")
     number_version = models.IntegerField(**NULLABLE, verbose_name="Номер версии")
     product = models.ForeignKey(Product, on_delete=models.CASCADE, **NULLABLE, verbose_name="Продукт")
-    status = models.BooleanField(choices=STATUS_CHOICES, default=STATUS_CHOICES[0], verbose_name='Статус')
+    is_activ = models.BooleanField(default=False, verbose_name='Активная версия')
 
     def __str__(self):
         return self.name
